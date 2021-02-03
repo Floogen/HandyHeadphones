@@ -25,5 +25,10 @@ namespace HandyHeadphones.API.Interfaces
         {
             return jsonAssetApi;
         }
+
+        public static int GetHeadphonesID()
+        {
+            return jsonAssetApi.GetHatId("Headphones");
+        }
     }
 }
