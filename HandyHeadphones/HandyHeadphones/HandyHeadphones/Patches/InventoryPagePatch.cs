@@ -8,6 +8,7 @@ using System.Linq;
 using StardewValley.Objects;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
+using HandyHeadphones.UI;
 
 namespace HandyHeadphones.Patches
 {
@@ -98,8 +99,8 @@ namespace HandyHeadphones.Patches
         {
 			List<string> list = Game1.player.songsHeard.Distinct().ToList();
 			list.Insert(0, "turn_off");
-			list.Add("random");
-			Game1.activeClickableMenu = new ChooseFromListMenu(list, OnSongChosen, isJukebox: true, Game1.player.currentLocation.miniJukeboxTrack.Value);
+			list.Insert(1, "random");
+			Game1.activeClickableMenu = new MusicMenu(list, OnSongChosen, isJukebox: true, Game1.player.currentLocation.miniJukeboxTrack.Value);
 		}
 
 		private static void OnSongChosen(string selection)
