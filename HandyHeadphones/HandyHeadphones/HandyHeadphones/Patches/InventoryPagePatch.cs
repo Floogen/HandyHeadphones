@@ -7,6 +7,7 @@ using StardewValley.Menus;
 using System.Linq;
 using StardewValley.Objects;
 using Microsoft.Xna.Framework.Input;
+using System.Collections.Generic;
 
 namespace HandyHeadphones.Patches
 {
@@ -32,30 +33,26 @@ namespace HandyHeadphones.Patches
 				}
 
 				bool heldItemWasNull = Game1.player.CursorSlotItem is null;
-				switch (hatComponent.name)
+				if (Game1.player.CursorSlotItem.Name == "Headphones")
 				{
-					case "Hat":
-						if (Game1.player.CursorSlotItem.Name == "Headphones")
-						{
-							Hat tmp = (Hat)helper.Reflection.GetMethod(__instance, "takeHeldItem").Invoke<Item>();
-							Item heldItem = Game1.player.hat;
-							heldItem = Utility.PerformSpecialItemGrabReplacement(heldItem);
-							helper.Reflection.GetMethod(__instance, "setHeldItem").Invoke(heldItem);
-							Game1.player.hat.Value = tmp;
+					Hat tmp = (Hat)helper.Reflection.GetMethod(__instance, "takeHeldItem").Invoke<Item>();
+					Item heldItem = Game1.player.hat;
+					heldItem = Utility.PerformSpecialItemGrabReplacement(heldItem);
+					helper.Reflection.GetMethod(__instance, "setHeldItem").Invoke(heldItem);
+					Game1.player.hat.Value = tmp;
 
-							if (Game1.player.hat.Value != null)
-							{
-								Game1.playSound("grassyStep");
-							}
-							else if (Game1.player.CursorSlotItem is null)
-							{
-								Game1.playSound("dwop");
-							}
+					if (Game1.player.hat.Value != null)
+					{
+						Game1.playSound("grassyStep");
+					}
+					else if (Game1.player.CursorSlotItem is null)
+					{
+						Game1.playSound("dwop");
+					}
 
-							monitor.Log("HERE123", LogLevel.Debug);
-						}
-						break;
+					ShowMusicMenu();
 				}
+
 				if (!heldItemWasNull || Game1.player.CursorSlotItem is null || !Game1.oldKBState.IsKeyDown(Keys.LeftShift))
 				{
 					return false;
@@ -87,9 +84,8 @@ namespace HandyHeadphones.Patches
 				{
 					if (Game1.player.hat.Value == null)
 					{
-						monitor.Log("HERE123", LogLevel.Debug);
 						Game1.player.hat.Value = helper.Reflection.GetMethod(__instance, "takeHeldItem").Invoke<Item>() as Hat;
-						Game1.playSound("grassyStep");
+						ShowMusicMenu();
 						return false;
 					}
 				}
@@ -98,12 +94,38 @@ namespace HandyHeadphones.Patches
 			return true;
 		}
 
-		internal static bool IsHeadphoneHeld()
+		private static void ShowMusicMenu()
+        {
+			List<string> list = Game1.player.songsHeard.Distinct().ToList();
+			list.Insert(0, "turn_off");
+			list.Add("random");
+			Game1.activeClickableMenu = new ChooseFromListMenu(list, OnSongChosen, isJukebox: true, Game1.player.currentLocation.miniJukeboxTrack.Value);
+		}
+
+		private static void OnSongChosen(string selection)
+		{
+			if (Game1.player.currentLocation == null)
+			{
+				return;
+			}
+			if (selection == "turn_off")
+			{
+				Game1.player.currentLocation.miniJukeboxTrack.Value = "";
+				return;
+			}
+			if (selection == "random")
+			{
+				Game1.player.currentLocation.SelectRandomMiniJukeboxTrack();
+			}
+			Game1.player.currentLocation.miniJukeboxTrack.Value = selection;
+		}
+
+		private static bool IsHeadphoneHeld()
         {
 			return Game1.player.CursorSlotItem is null || Game1.player.CursorSlotItem.Name != "Headphones";
 		}
 
-		internal static bool IsSelectingHeadPhonesInInventory(InventoryPage page, int x, int y)
+		private static bool IsSelectingHeadPhonesInInventory(InventoryPage page, int x, int y)
         {
 			return page.inventory.getItemAt(x, y) != null && page.inventory.getItemAt(x, y).Name == "Headphones";
         }
