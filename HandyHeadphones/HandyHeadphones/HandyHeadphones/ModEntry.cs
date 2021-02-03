@@ -18,8 +18,10 @@ namespace HandyHeadphones
     {
         internal static IMonitor monitor;
         internal static IModHelper modHelper;
-
         internal static readonly string hatsPath = Path.Combine("assets", "HeadphonesPack");
+
+        private string cachedRequestedSong;
+        private bool waitingForEventToFinishToResumeCachedSong;
 
         public override void Entry(IModHelper helper)
         {
@@ -44,6 +46,49 @@ namespace HandyHeadphones
 
             // Hook into the player warping
             helper.Events.Player.Warped += this.OnWarped;
+
+            // Hook into the save loading
+            helper.Events.GameLoop.SaveLoaded += this.OnSaveLoaded;
+
+            // Hook into the player exiting to title
+            helper.Events.GameLoop.ReturnedToTitle += this.OnReturnedToTitle;
+        }
+
+        private void OnReturnedToTitle(object sender, ReturnedToTitleEventArgs e)
+        {
+            // Unhook into the 1 second tick
+            Helper.Events.GameLoop.OneSecondUpdateTicked -= this.OnOneSecondUpdateTicked;
+
+            cachedRequestedSong = null;
+            waitingForEventToFinishToResumeCachedSong = false;
+        }
+
+        private void OnSaveLoaded(object sender, SaveLoadedEventArgs e)
+        {
+            // Hook into the 1 second tick
+            Helper.Events.GameLoop.OneSecondUpdateTicked += this.OnOneSecondUpdateTicked;
+        }
+
+        private void OnOneSecondUpdateTicked(object sender, OneSecondUpdateTickedEventArgs e)
+        {
+            GameLocation location = Game1.player.currentLocation;
+            if (location is null)
+            {
+                return;
+            }
+
+            if (location.currentEvent != null && !String.IsNullOrEmpty(location.miniJukeboxTrack.Value))
+            {
+                cachedRequestedSong = location.miniJukeboxTrack.Value;
+                waitingForEventToFinishToResumeCachedSong = true;
+            }
+            else if (waitingForEventToFinishToResumeCachedSong)
+            {
+                location.miniJukeboxTrack.Value = cachedRequestedSong;
+
+                cachedRequestedSong = null;
+                waitingForEventToFinishToResumeCachedSong = false;
+            }
         }
 
         private void OnWarped(object sender, WarpedEventArgs e)
