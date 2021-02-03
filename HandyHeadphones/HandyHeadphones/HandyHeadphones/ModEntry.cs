@@ -1,4 +1,5 @@
 ﻿using HandyHeadphones.API.Interfaces;
+using Harmony;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
@@ -6,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,12 +16,27 @@ namespace HandyHeadphones
     public class ModEntry : Mod
     {
         internal static IMonitor monitor;
+        internal static IModHelper modHelper;
+
         internal static readonly string hatsPath = Path.Combine("assets", "HeadphonesPack");
 
         public override void Entry(IModHelper helper)
         {
             // Set up the monitor
             monitor = Monitor;
+            modHelper = helper;
+
+            // Load our Harmony patches
+            try
+            {
+                var harmony = HarmonyInstance.Create(this.ModManifest.UniqueID);
+                harmony.PatchAll(Assembly.GetExecutingAssembly());
+            }
+            catch (Exception e)
+            {
+                Monitor.Log($"Issue with Harmony patch: {e}", LogLevel.Error);
+                return;
+            }
 
             // Hook into the game launch
             helper.Events.GameLoop.GameLaunched += this.OnGameLaunched;
