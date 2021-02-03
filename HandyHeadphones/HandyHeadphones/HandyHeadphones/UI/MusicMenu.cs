@@ -294,9 +294,9 @@ namespace HandyHeadphones.UI
 					IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(384, 396, 15, 15), this.songButtons[j].bounds.X, this.songButtons[j].bounds.Y, this.songButtons[j].bounds.Width, this.songButtons[j].bounds.Height, this.songButtons[j].containsPoint(Game1.getOldMouseX(), Game1.getOldMouseY()) ? Color.Wheat : Color.White, 4f, drawShadow: false);
 					if (songName == "Off")
                     {
-						Utility.drawWithShadow(b, Game1.mouseCursors, new Vector2(this.songButtons[j].bounds.X + 32, this.songButtons[j].bounds.Y + 28), new Rectangle(128, 384, 9, 9), Color.White, 0f, Vector2.Zero, 4f, flipped: false, 0.99f, shadowIntensity: 0f);
+						Utility.drawWithShadow(b, Game1.mouseCursors, new Vector2(this.songButtons[j].bounds.X + 32, this.songButtons[j].bounds.Y + 28), new Rectangle(137, 384, 9, 9), Color.White, 0f, Vector2.Zero, 4f, flipped: false, 0.99f, shadowIntensity: 0f);
 					}
-					if (songName == "Randomize")
+					else if (songName == "Randomize")
 					{
 						Utility.drawWithShadow(b, Game1.mouseCursors, new Vector2(this.songButtons[j].bounds.X + 32, this.songButtons[j].bounds.Y + 28), new Rectangle(50, 428, 10, 10), Color.White, 0f, Vector2.Zero, 4f, flipped: false, 0.99f, shadowIntensity: 0f);
 					}
