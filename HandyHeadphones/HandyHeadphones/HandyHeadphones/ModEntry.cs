@@ -3,6 +3,7 @@ using Harmony;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
+using StardewValley.Objects;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -40,6 +41,22 @@ namespace HandyHeadphones
 
             // Hook into the game launch
             helper.Events.GameLoop.GameLaunched += this.OnGameLaunched;
+
+            // Hook into the player warping
+            helper.Events.Player.Warped += this.OnWarped;
+        }
+
+        private void OnWarped(object sender, WarpedEventArgs e)
+        {
+            Hat playerHat = e.Player.hat;
+
+            if (playerHat is null || playerHat.Name != "Headphones")
+            {
+                return;
+            }
+
+            e.NewLocation.miniJukeboxTrack.Value = e.OldLocation.miniJukeboxTrack.Value;
+            e.OldLocation.miniJukeboxTrack.Value = "";
         }
 
         private void OnGameLaunched(object sender, GameLaunchedEventArgs e)

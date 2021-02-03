@@ -54,6 +54,7 @@
     <Compile Include="HandyHeadphones\API\ApiManager.cs" />
     <Compile Include="HandyHeadphones\API\Interfaces\IJsonAssetApi.cs" />
     <Compile Include="HandyHeadphones\ModEntry.cs" />
+    <Compile Include="HandyHeadphones\Patches\GameLocationPatch.cs" />
     <Compile Include="HandyHeadphones\Patches\InventoryPagePatch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
