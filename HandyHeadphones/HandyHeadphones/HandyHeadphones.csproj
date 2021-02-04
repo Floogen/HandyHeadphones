@@ -59,6 +59,7 @@
     <Compile Include="HandyHeadphones\Patches\InventoryPageRightClickPatch.cs" />
     <Compile Include="HandyHeadphones\Patches\InventoryPageLeftClickPatch.cs" />
     <Compile Include="HandyHeadphones\UI\MusicMenu.cs" />
+    <Compile Include="HandyHeadphones\UI\SoundMenu.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
