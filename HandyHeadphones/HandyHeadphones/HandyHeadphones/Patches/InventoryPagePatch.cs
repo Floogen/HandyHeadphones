@@ -39,7 +39,6 @@ namespace HandyHeadphones.Patches
 					Hat tmp = (Hat)helper.Reflection.GetMethod(__instance, "takeHeldItem").Invoke<Item>();
 					Item heldItem = Game1.player.hat;
 					heldItem = Utility.PerformSpecialItemGrabReplacement(heldItem);
-					helper.Reflection.GetMethod(__instance, "setHeldItem").Invoke(heldItem);
 					Game1.player.hat.Value = tmp;
 
 					if (Game1.player.hat.Value != null)
@@ -49,6 +48,11 @@ namespace HandyHeadphones.Patches
 					else if (Game1.player.CursorSlotItem is null)
 					{
 						Game1.playSound("dwop");
+					}
+
+					if (heldItem != null && !Game1.player.addItemToInventoryBool(heldItem, false))
+                    {
+						helper.Reflection.GetMethod(__instance, "setHeldItem").Invoke(heldItem);
 					}
 
 					ShowMusicMenu();
