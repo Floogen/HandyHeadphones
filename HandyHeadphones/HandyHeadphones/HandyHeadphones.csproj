@@ -57,6 +57,7 @@
     <Compile Include="HandyHeadphones\ModEntry.cs" />
     <Compile Include="HandyHeadphones\Patches\GameChangeMusicTrackPatch.cs" />
     <Compile Include="HandyHeadphones\Patches\GameLocationPatch.cs" />
+    <Compile Include="HandyHeadphones\Patches\GameUpdateMusicPatch.cs" />
     <Compile Include="HandyHeadphones\Patches\InventoryPageRightClickPatch.cs" />
     <Compile Include="HandyHeadphones\Patches\InventoryPageLeftClickPatch.cs" />
     <Compile Include="HandyHeadphones\UI\MusicMenu.cs" />
