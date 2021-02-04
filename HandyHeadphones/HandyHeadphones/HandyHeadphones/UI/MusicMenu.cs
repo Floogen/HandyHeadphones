@@ -14,13 +14,14 @@ namespace HandyHeadphones.UI
 	public class MusicMenu : IClickableMenu
 	{
 		// Constants
-		public const int songsPerPage = 6;
-		public const int region_forwardButton = 101;
-		public const int region_backButton = 102;
+		private const int songsPerPage = 6;
+		private const int region_forwardButton = 101;
+		private const int region_backButton = 102;
 
 		// UI related
 		private List<List<string>> pages;
 		private List<string> songs = new List<string>();
+		private int maxSongWidth = (int)Game1.dialogueFont.MeasureString("Summer (The Sun Can Bend An Orange Sky)").X;
 
 		public List<ClickableComponent> songButtons;
 		public ClickableTextureComponent forwardButton;
@@ -44,7 +45,7 @@ namespace HandyHeadphones.UI
 
 			Game1.playSound("bigSelect");
 			this.PaginateSongs();
-			base.width = Game1.uiViewport.Width / 2;
+			base.width = Game1.uiViewport.Width / 2 < maxSongWidth ? Game1.uiViewport.Width / 4 + maxSongWidth : Game1.uiViewport.Width / 2;
 			base.height = 576;
 
 			if (LocalizedContentManager.CurrentLanguageCode == LocalizedContentManager.LanguageCode.ko || LocalizedContentManager.CurrentLanguageCode == LocalizedContentManager.LanguageCode.fr)
@@ -72,14 +73,14 @@ namespace HandyHeadphones.UI
 			}
 
 			base.upperRightCloseButton = new ClickableTextureComponent(new Rectangle(base.xPositionOnScreen + base.width - 20, base.yPositionOnScreen - 8, 48, 48), Game1.mouseCursors, new Rectangle(337, 494, 12, 12), 4f);
-			this.backButton = new ClickableTextureComponent(new Rectangle(base.xPositionOnScreen - 64, base.yPositionOnScreen + 8, 48, 44), Game1.mouseCursors, new Rectangle(352, 495, 12, 11), 4f)
+			this.backButton = new ClickableTextureComponent(new Rectangle(base.xPositionOnScreen - 64, base.yPositionOnScreen + base.height - 48, 48, 44), Game1.mouseCursors, new Rectangle(352, 495, 12, 11), 4f)
 			{
-				myID = 102,
+				myID = region_backButton,
 				rightNeighborID = -7777
 			};
 			this.forwardButton = new ClickableTextureComponent(new Rectangle(base.xPositionOnScreen + base.width + 64 - 48, base.yPositionOnScreen + base.height - 48, 48, 44), Game1.mouseCursors, new Rectangle(365, 495, 12, 11), 4f)
 			{
-				myID = 101
+				myID = region_forwardButton
 			};
 
 			if (Game1.options.SnappyMenus)
@@ -100,7 +101,7 @@ namespace HandyHeadphones.UI
 				{
 					this.pages.Add(new List<string>());
 				}
-				this.pages[which2 / songsPerPage].Add(Utility.getSongTitleFromCueName(song));
+				this.pages[which2 / songsPerPage].Add(song);
 
 				count--;
 			}
@@ -114,42 +115,33 @@ namespace HandyHeadphones.UI
 
 		protected override void customSnapBehavior(int direction, int oldRegion, int oldID)
 		{
-			if (oldID >= 0 && oldID != 101 && oldID != 102)
+			if (oldID >= 0 && oldID != region_forwardButton && oldID != region_backButton)
 			{
 				switch (direction)
 				{
 					case 2:
-						if (oldID < 5 && this.pages[this.currentPage].Count - 1 > oldID)
+						if (oldID < songsPerPage - 1 && this.pages[this.currentPage].Count - 1 > oldID)
 						{
-							base.currentlySnappedComponent = base.getComponentWithID(oldID + 1);
-						}
-						else if (oldID > songsPerPage && oldID < 108 && this.pages[this.currentPage].Count - 1 + 103 > oldID)
-                        {
 							base.currentlySnappedComponent = base.getComponentWithID(oldID + 1);
 						}
 						break;
 					case 1:
-						if (this.currentPage < this.pages.Count - 1 && oldID > 102)
+						if (this.currentPage < this.pages.Count - 1 && oldID > region_backButton)
 						{
-							base.currentlySnappedComponent = base.getComponentWithID(101);
-							base.currentlySnappedComponent.leftNeighborID = oldID;
-						}
-						else if (oldID < songsPerPage)
-						{
-							base.currentlySnappedComponent = base.getComponentWithID(oldID + 103);
+							base.currentlySnappedComponent = base.getComponentWithID(region_forwardButton);
 							base.currentlySnappedComponent.leftNeighborID = oldID;
 						}
 						break;
 					case 3:
 						if (this.currentPage > 0)
 						{
-							base.currentlySnappedComponent = base.getComponentWithID(102);
+							base.currentlySnappedComponent = base.getComponentWithID(region_backButton);
 							base.currentlySnappedComponent.rightNeighborID = oldID;
 						}
 						break;
 				}
 			}
-			else if (oldID == 102)
+			else if (oldID == region_backButton)
 			{
 				base.currentlySnappedComponent = base.getComponentWithID(0);
 			}
@@ -264,7 +256,17 @@ namespace HandyHeadphones.UI
 
 					// Play song
 					this.chooseAction(this.pages[this.currentPage][i]);
-					Game1.addHUDMessage(new HUDMessage($"Now playing \"{this.pages[this.currentPage][i]}\"", 2));
+
+					string songName = Utility.getSongTitleFromCueName(this.pages[this.currentPage][i]);
+					if (songName == "Off")
+					{
+						Game1.addHUDMessage(new HUDMessage($"Shutting off headphones", 3));
+					}
+					else
+                    {
+						Game1.addHUDMessage(new HUDMessage($"Now playing \"{songName}\"", 2));
+					}
+					
 					return;
 				}
 			}
@@ -289,7 +291,7 @@ namespace HandyHeadphones.UI
 			{
 				if (this.pages.Count() > 0 && this.pages[this.currentPage].Count() > j)
 				{
-					string songName = this.pages[this.currentPage][j];
+					string songName = Utility.getSongTitleFromCueName(this.pages[this.currentPage][j]);
 
 					IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(384, 396, 15, 15), this.songButtons[j].bounds.X, this.songButtons[j].bounds.Y, this.songButtons[j].bounds.Width, this.songButtons[j].bounds.Height, this.songButtons[j].containsPoint(Game1.getOldMouseX(), Game1.getOldMouseY()) ? Color.Wheat : Color.White, 4f, drawShadow: false);
 					if (songName == "Off")
@@ -304,7 +306,9 @@ namespace HandyHeadphones.UI
 					{
 						Utility.drawWithShadow(b, Game1.mouseCursors, new Vector2(this.songButtons[j].bounds.X + 32, this.songButtons[j].bounds.Y + 28), new Rectangle(516, 1916, 7, 10), Color.White, 0f, Vector2.Zero, 4f, flipped: false, 0.99f, shadowIntensity: 0f);
 					}
-					SpriteText.drawString(b, songName, this.songButtons[j].bounds.X + 128 + 4, this.songButtons[j].bounds.Y + 20);
+					//Utility.drawTextWithShadow(b, songName, Game1.dialogueFont, new Vector2((float)(this.songButtons[j].bounds.X + 128 + 4) - Game1.dialogueFont.MeasureString(songName).X / 2f, this.songButtons[j].bounds.Y + 20), Game1.textColor);
+					Utility.drawTextWithShadow(b, songName, Game1.dialogueFont, new Vector2((float)(base.xPositionOnScreen + base.width / 2) - Game1.dialogueFont.MeasureString(songName).X / 2f, this.songButtons[j].bounds.Y + 20), Game1.textColor);
+					//SpriteText.drawString(b, songName, this.songButtons[j].bounds.X + 128 + 4, this.songButtons[j].bounds.Y + 20);
 				}
 			}
 
