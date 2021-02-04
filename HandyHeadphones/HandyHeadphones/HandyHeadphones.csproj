@@ -55,6 +55,7 @@
     <Compile Include="HandyHeadphones\API\Interfaces\IJsonAssetApi.cs" />
     <Compile Include="HandyHeadphones\ModConfig.cs" />
     <Compile Include="HandyHeadphones\ModEntry.cs" />
+    <Compile Include="HandyHeadphones\Patches\GameChangeMusicTrackPatch.cs" />
     <Compile Include="HandyHeadphones\Patches\GameLocationPatch.cs" />
     <Compile Include="HandyHeadphones\Patches\InventoryPageRightClickPatch.cs" />
     <Compile Include="HandyHeadphones\Patches\InventoryPageLeftClickPatch.cs" />
