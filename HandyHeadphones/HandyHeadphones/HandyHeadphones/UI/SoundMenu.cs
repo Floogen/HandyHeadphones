@@ -193,7 +193,7 @@ namespace HandyHeadphones.UI
 			base.receiveKeyPress(key);
 			if (Game1.options.doesInputListContain(Game1.options.cancelButton, key) && this.readyToClose())
 			{
-				Game1.exitActiveMenu();
+				base.exitThisMenu();
 				Game1.playSound("bigDeSelect");
 			}
 		}
@@ -279,7 +279,7 @@ namespace HandyHeadphones.UI
 		public override void draw(SpriteBatch b)
 		{
 			b.Draw(Game1.fadeToBlackRect, Game1.graphics.GraphicsDevice.Viewport.Bounds, Color.Black * 0.75f);
-			SpriteText.drawStringWithScrollCenteredAt(b, "Pick a Song to Play", base.xPositionOnScreen + base.width / 2, base.yPositionOnScreen - 64);
+			SpriteText.drawStringWithScrollCenteredAt(b, "Pick a Sound to Play", base.xPositionOnScreen + base.width / 2, base.yPositionOnScreen - 64);
 			IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(384, 373, 18, 18), base.xPositionOnScreen, base.yPositionOnScreen, base.width, base.height, Color.White, 4f);
 			for (int j = 0; j < this.soundButtons.Count; j++)
 			{
