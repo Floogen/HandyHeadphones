@@ -34,7 +34,7 @@ namespace HandyHeadphones.Patches
 				}
 
 				bool heldItemWasNull = Game1.player.CursorSlotItem is null;
-				if (Game1.player.CursorSlotItem.Name == "Headphones")
+				if (Game1.player.CursorSlotItem.Name == "Headphones" || Game1.player.CursorSlotItem.Name == "Earbuds")
 				{
 					Hat tmp = (Hat)helper.Reflection.GetMethod(__instance, "takeHeldItem").Invoke<Item>();
 					Item heldItem = Game1.player.hat;
@@ -123,12 +123,12 @@ namespace HandyHeadphones.Patches
 
 		private static bool IsHeadphoneHeld()
         {
-			return Game1.player.CursorSlotItem is null || Game1.player.CursorSlotItem.Name != "Headphones";
+			return Game1.player.CursorSlotItem is null || (Game1.player.CursorSlotItem.Name != "Headphones" && Game1.player.CursorSlotItem.Name != "Earbuds");
 		}
 
 		private static bool IsSelectingHeadPhonesInInventory(InventoryPage page, int x, int y)
         {
-			return page.inventory.getItemAt(x, y) != null && page.inventory.getItemAt(x, y).Name == "Headphones";
+			return page.inventory.getItemAt(x, y) != null && (page.inventory.getItemAt(x, y).Name == "Headphones" || page.inventory.getItemAt(x, y).Name == "Earbuds");
         }
     }
 }

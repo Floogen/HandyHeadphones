@@ -95,7 +95,7 @@ namespace HandyHeadphones
         {
             Hat playerHat = e.Player.hat;
 
-            if (playerHat is null || playerHat.Name != "Headphones")
+            if (playerHat is null || (playerHat.Name != "Headphones" && playerHat.Name != "Earbuds"))
             {
                 return;
             }

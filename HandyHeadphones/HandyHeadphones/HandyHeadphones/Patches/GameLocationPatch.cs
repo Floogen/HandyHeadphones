@@ -25,7 +25,7 @@ namespace HandyHeadphones.Patches
 		internal static bool Prefix(GameLocation __instance, ref bool __result)
 		{
 			Hat playerHat = Game1.player.hat;
-			if (playerHat != null && playerHat.Name == "Headphones" && __instance.miniJukeboxTrack.Value != "")
+			if (playerHat != null && (playerHat.Name == "Headphones" || playerHat.Name == "Earbuds") && __instance.miniJukeboxTrack.Value != "")
             {
 				__result = true;
 				return false;
