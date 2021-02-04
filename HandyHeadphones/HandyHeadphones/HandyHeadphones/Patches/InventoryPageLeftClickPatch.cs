@@ -2,18 +2,15 @@
 using StardewValley;
 using System.Reflection;
 using StardewModdingAPI;
-using Microsoft.Xna.Framework;
 using StardewValley.Menus;
 using System.Linq;
 using StardewValley.Objects;
 using Microsoft.Xna.Framework.Input;
-using System.Collections.Generic;
-using HandyHeadphones.UI;
 
 namespace HandyHeadphones.Patches
 {
     [HarmonyPatch]
-    class InventoryPagePatch
+    class InventoryPageLeftClickPatch
     {
         private static IMonitor monitor = ModEntry.monitor;
 		private static IModHelper helper = ModEntry.modHelper;
@@ -170,7 +167,7 @@ namespace HandyHeadphones.Patches
 						helper.Reflection.GetMethod(__instance, "setHeldItem").Invoke(heldItem);
 					}
 
-					ShowMusicMenu();
+					ModEntry.ShowMusicMenu();
 				}
 
 				if (!heldItemWasNull || Game1.player.CursorSlotItem is null || !Game1.oldKBState.IsKeyDown(Keys.LeftShift))
@@ -205,38 +202,13 @@ namespace HandyHeadphones.Patches
 					if (Game1.player.hat.Value == null)
 					{
 						Game1.player.hat.Value = helper.Reflection.GetMethod(__instance, "takeHeldItem").Invoke<Item>() as Hat;
-						ShowMusicMenu();
+						ModEntry.ShowMusicMenu();
 						return false;
 					}
 				}
 			}
 
 			return true;
-		}
-
-		private static void ShowMusicMenu()
-        {
-			List<string> list = config.ShowAllMusicTracks ? allSongs.ToList() : Game1.player.songsHeard.Distinct().ToList();
-			list = list.OrderBy(s => Utility.getSongTitleFromCueName(s)).ToList();
-			list.Insert(0, "turn_off");
-			list.Insert(1, "random");
-
-			Game1.activeClickableMenu = new MusicMenu(list, OnSongChosen, isJukebox: true, Game1.player.currentLocation.miniJukeboxTrack.Value);
-		}
-
-		private static void OnSongChosen(string selection)
-		{
-			if (Game1.player.currentLocation == null)
-			{
-				return;
-			}
-			if (selection == "turn_off")
-			{
-				Game1.player.currentLocation.miniJukeboxTrack.Value = "";
-				return;
-			}
-
-			Game1.player.currentLocation.miniJukeboxTrack.Value = selection;
 		}
 
 		private static bool IsHeadphoneHeld()

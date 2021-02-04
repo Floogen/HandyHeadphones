@@ -1,5 +1,6 @@
 ﻿using HandyHeadphones.API.Interfaces;
 using HandyHeadphones.Patches;
+using HandyHeadphones.UI;
 using Harmony;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
@@ -28,6 +29,121 @@ namespace HandyHeadphones
         // Debug related
         private bool debugMode = false;
         private List<string> testedSongs;
+
+        // All songs manually listed
+        public static readonly string[] allSongs =
+        {
+            "50s",
+            "AbigailFlute",
+            "AbigailFluteDuet",
+            "aerobics",
+            "breezy",
+            "bugLevelLoop",
+            "caldera",
+            "Cavern",
+            "christmasTheme",
+            "Cloth",
+            "CloudCountry",
+            "cowboy_boss",
+            "cowboy_outlawsong",
+            "Cowboy_OVERWORLD",
+            "Cowboy_singing",
+            "Cowboy_undead",
+            "crane_game",
+            "crane_game_fast",
+            "Crystal Bells",
+            "desolate",
+            "distantBanjo",
+            "echos",
+            "elliottPiano",
+            "EmilyDance",
+            "EmilyDream",
+            "EmilyTheme",
+            "end_credits",
+            "event1",
+            "event2",
+            "fall1",
+            "fall2",
+            "fall3",
+            "fallFest",
+            "fieldofficeTentMusic",
+            "FlowerDance",
+            "FrogCave",
+            "grandpas_theme",
+            "gusviolin",
+            "harveys_theme_jazz",
+            "heavy",
+            "honkytonky",
+            "Icicles",
+            "IslandMusic",
+            "jaunty",
+            "jojaOfficeSoundscape",
+            "junimoKart",
+            "junimoKart_ghostMusic",
+            "junimoKart_mushroomMusic",
+            "junimoKart_slimeMusic",
+            "junimoKart_whaleMusic",
+            "junimoStarSong",
+            "kindadumbautumn",
+            "libraryTheme",
+            "MainTheme",
+            "MarlonsTheme",
+            "marnieShop",
+            "mermaidSong",
+            "moonlightJellies",
+            "movie_classic",
+            "movie_nature",
+            "movie_wumbus",
+            "movieTheater",
+            "movieTheaterAfter",
+            "musicboxsong",
+            "Near The Planet Core",
+            "night_market",
+            "Of Dwarves",
+            "Overcast",
+            "PIRATE_THEME",
+            "PIRATE_THEME(muffled)",
+            "playful",
+            "poppy",
+            "ragtime",
+            "sad_kid",
+            "sadpiano",
+            "Saloon1",
+            "sam_acoustic1",
+            "sam_acoustic2",
+            "sampractice",
+            "Secret Gnomes",
+            "SettlingIn",
+            "shaneTheme",
+            "shimmeringbastion",
+            "spaceMusic",
+            "spirits_eve",
+            "spring1",
+            "spring2",
+            "spring3",
+            "springtown",
+            "starshoot",
+            "submarine_song",
+            "summer1",
+            "summer2",
+            "summer3",
+            "SunRoom",
+            "sweet",
+            "tickTock",
+            "tinymusicbox",
+            "title_night",
+            "tribal",
+            "VolcanoMines1",
+            "VolcanoMines2",
+            "wavy",
+            "wedding",
+            "winter1",
+            "winter2",
+            "winter3",
+            "WizardSong",
+            "woodsTheme",
+            "XOR"
+        };
 
         public override void Entry(IModHelper helper)
         {
@@ -136,7 +252,7 @@ namespace HandyHeadphones
 
         private void VerifyAllSongs()
         {
-            string song = InventoryPagePatch.allSongs.FirstOrDefault(s => !testedSongs.Contains(s));
+            string song = allSongs.FirstOrDefault(s => !testedSongs.Contains(s));
             if (String.IsNullOrEmpty(song))
             {
                 return;
@@ -158,6 +274,34 @@ namespace HandyHeadphones
                 Game1.player.currentLocation.SelectRandomMiniJukeboxTrack();
             }
             Game1.player.currentLocation.miniJukeboxTrack.Value = song;
+        }
+
+        public static void ShowMusicMenu()
+        {
+            List<string> list = config.ShowAllMusicTracks ? allSongs.ToList() : Game1.player.songsHeard.Distinct().ToList();
+            list = list.OrderBy(s => Utility.getSongTitleFromCueName(s)).ToList();
+            list.Insert(0, "turn_off");
+            list.Insert(1, "random");
+
+            Game1.activeClickableMenu = new MusicMenu(list, OnSongChosen, isJukebox: true, Game1.player.currentLocation.miniJukeboxTrack.Value);
+        }
+
+        public static void OnSongChosen(string selection)
+        {
+            if (Game1.player.currentLocation == null)
+            {
+                return;
+            }
+            if (selection == "turn_off")
+            {
+                Game1.player.currentLocation.miniJukeboxTrack.Value = "";
+                return;
+            }
+            if (selection == "random")
+            {
+                Game1.player.currentLocation.SelectRandomMiniJukeboxTrack();
+            }
+            Game1.player.currentLocation.miniJukeboxTrack.Value = selection;
         }
     }
 }

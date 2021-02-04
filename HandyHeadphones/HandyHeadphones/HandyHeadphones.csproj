@@ -56,7 +56,8 @@
     <Compile Include="HandyHeadphones\ModConfig.cs" />
     <Compile Include="HandyHeadphones\ModEntry.cs" />
     <Compile Include="HandyHeadphones\Patches\GameLocationPatch.cs" />
-    <Compile Include="HandyHeadphones\Patches\InventoryPagePatch.cs" />
+    <Compile Include="HandyHeadphones\Patches\InventoryPageRightClickPatch.cs" />
+    <Compile Include="HandyHeadphones\Patches\InventoryPageLeftClickPatch.cs" />
     <Compile Include="HandyHeadphones\UI\MusicMenu.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
