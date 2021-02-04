@@ -17,6 +17,8 @@ To change the music track you selected, you can right click the headphones or ea
 
 Additionally, the headphones / earbuds will let any event music play and resume your selected track when the event ends.
 
+There is a third hat, called studio headphones, that allows you to play all the in-game sounds with the background music muted. This may be useful for modders!
+
 ## Configurations
 This mod creates a `config.json` under the `...\HandyHeadphones\HandyHeadphones` folder. It contains options that you can modify to change how **Handy Headphones** interacts with the game.
 
