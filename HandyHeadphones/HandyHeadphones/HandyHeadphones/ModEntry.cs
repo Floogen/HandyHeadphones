@@ -305,9 +305,7 @@ namespace HandyHeadphones
             "Frost_Ambient",
             "Lava_Ambient",
             "yoba",
-            "clank,clank",
             "clank",
-            "clank,clank",
             "warrior",
             "slingshot",
             "discoverMineral",
@@ -516,7 +514,7 @@ namespace HandyHeadphones
         {
             Hat playerHat = e.Player.hat;
 
-            if (playerHat is null || (playerHat.Name != "Headphones" && playerHat.Name != "Earbuds"))
+            if (playerHat is null || (playerHat.Name != "Headphones" && playerHat.Name != "Earbuds" && playerHat.Name != "Studio Headphones"))
             {
                 return;
             }
@@ -580,23 +578,24 @@ namespace HandyHeadphones
             {
                 return;
             }
+
             if (selection == "turn_off")
             {
                 Game1.player.currentLocation.miniJukeboxTrack.Value = "";
                 return;
             }
-            if (selection == "random")
-            {
-                Game1.player.currentLocation.SelectRandomMiniJukeboxTrack();
-            }
+
             Game1.player.currentLocation.miniJukeboxTrack.Value = selection;
+            Game1.updateMusic();
         }
 
         public static void ShowSoundMenu()
         {
             List<string> list = allSounds.ToList();
-            list = list.OrderBy(s => Utility.getSongTitleFromCueName(s)).ToList();
+            list = list.Distinct().OrderBy(s => s).ToList();
             list.Insert(0, "turn_off");
+
+            Game1.player.currentLocation.miniJukeboxTrack.Value = "none";
 
             Game1.activeClickableMenu = new SoundMenu(list, OnSoundChosen);
         }
@@ -607,9 +606,11 @@ namespace HandyHeadphones
             {
                 return;
             }
+
             if (selection == "turn_off")
             {
                 Game1.playSound("cancel");
+                Game1.player.currentLocation.miniJukeboxTrack.Value = "";
                 return;
             }
 
