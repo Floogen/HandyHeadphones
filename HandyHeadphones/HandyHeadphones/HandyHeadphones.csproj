@@ -63,6 +63,9 @@
     <None Include="HandyHeadphones\assets\HeadphonesPack\content-pack.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="HandyHeadphones\assets\HeadphonesPack\Hats\Earbuds\hat.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="HandyHeadphones\assets\HeadphonesPack\Hats\Headphones\hat.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -72,6 +75,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="HandyHeadphones\assets\HeadphonesPack\Hats\Earbuds\hat.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="HandyHeadphones\assets\HeadphonesPack\Hats\Headphones\hat.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
