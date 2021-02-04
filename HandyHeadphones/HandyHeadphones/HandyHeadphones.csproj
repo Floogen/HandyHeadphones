@@ -71,6 +71,9 @@
     <None Include="HandyHeadphones\assets\HeadphonesPack\Hats\Headphones\hat.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="HandyHeadphones\assets\HeadphonesPack\Hats\Studio Headphones\hat.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="manifest.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -81,6 +84,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="HandyHeadphones\assets\HeadphonesPack\Hats\Headphones\hat.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="HandyHeadphones\assets\HeadphonesPack\Hats\Studio Headphones\hat.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
