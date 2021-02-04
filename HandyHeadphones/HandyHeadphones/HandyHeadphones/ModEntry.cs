@@ -18,6 +18,7 @@ namespace HandyHeadphones
     {
         internal static IMonitor monitor;
         internal static IModHelper modHelper;
+        internal static ModConfig config;
         internal static readonly string hatsPath = Path.Combine("assets", "HeadphonesPack");
 
         private string cachedRequestedSong;
@@ -25,9 +26,10 @@ namespace HandyHeadphones
 
         public override void Entry(IModHelper helper)
         {
-            // Set up the monitor
+            // Set up the monitor, helper and config
             monitor = Monitor;
             modHelper = helper;
+            config = helper.ReadConfig<ModConfig>();
 
             // Load our Harmony patches
             try
