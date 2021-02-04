@@ -1,4 +1,5 @@
 ﻿using HandyHeadphones.API.Interfaces;
+using HandyHeadphones.Patches;
 using Harmony;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
@@ -23,6 +24,10 @@ namespace HandyHeadphones
 
         private string cachedRequestedSong;
         private bool waitingForEventToFinishToResumeCachedSong;
+
+        // Debug related
+        private bool debugMode = false;
+        private List<string> testedSongs;
 
         public override void Entry(IModHelper helper)
         {
@@ -67,12 +72,22 @@ namespace HandyHeadphones
 
         private void OnSaveLoaded(object sender, SaveLoadedEventArgs e)
         {
+            if (debugMode)
+            {
+                testedSongs = new List<string>();
+            }
+
             // Hook into the 1 second tick
             Helper.Events.GameLoop.OneSecondUpdateTicked += this.OnOneSecondUpdateTicked;
         }
 
         private void OnOneSecondUpdateTicked(object sender, OneSecondUpdateTickedEventArgs e)
         {
+            if (debugMode && e.IsMultipleOf(120))
+            {
+                VerifyAllSongs();
+            }
+
             GameLocation location = Game1.player.currentLocation;
             if (location is null)
             {
@@ -117,6 +132,32 @@ namespace HandyHeadphones
                 // Add the headphones asset
                 ApiManager.GetJsonAssetInterface().LoadAssets(Path.Combine(Helper.DirectoryPath, hatsPath));
             }
+        }
+
+        private void VerifyAllSongs()
+        {
+            string song = InventoryPagePatch.allSongs.FirstOrDefault(s => !testedSongs.Contains(s));
+            if (String.IsNullOrEmpty(song))
+            {
+                return;
+            }
+            testedSongs.Add(song);
+
+            Monitor.Log($"Playing {song}...", LogLevel.Debug);
+            if (Game1.player.currentLocation == null)
+            {
+                return;
+            }
+            if (song == "turn_off")
+            {
+                Game1.player.currentLocation.miniJukeboxTrack.Value = "";
+                return;
+            }
+            if (song == "random")
+            {
+                Game1.player.currentLocation.SelectRandomMiniJukeboxTrack();
+            }
+            Game1.player.currentLocation.miniJukeboxTrack.Value = song;
         }
     }
 }
