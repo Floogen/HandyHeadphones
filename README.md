@@ -13,6 +13,8 @@ To purchase either hat, visit the hat shop.
 
 To use the headphones or earbuds, simply equip them and a prompt will appear to select a soundtrack. If you unequip the item, the normal music will play.
 
+To change the music track you selected, you can right click the headphones or earbuds while wearing them to bring up the prompt again.
+
 Additionally, the headphones / earbuds will let any event music play and resume your selected track when the event ends.
 
 ## Configurations
