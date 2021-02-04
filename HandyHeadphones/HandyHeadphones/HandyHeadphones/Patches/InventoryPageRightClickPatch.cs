@@ -15,7 +15,6 @@ namespace HandyHeadphones.Patches
 		private static IMonitor monitor = ModEntry.monitor;
 		private static IModHelper helper = ModEntry.modHelper;
 		private static ModConfig config = ModEntry.config;
-		private static string[] allSongs = ModEntry.allSongs;
 
 
 		internal static MethodInfo TargetMethod()
@@ -29,14 +28,21 @@ namespace HandyHeadphones.Patches
 			if (hatComponent.containsPoint(x, y))
 			{
 				Hat wornHat = Game1.player.hat;
-				if (wornHat is null || !(wornHat.Name == "Headphones" || wornHat.Name == "Earbuds"))
+				if (wornHat is null)
 				{
 					return true;
 				}
 
-
-				ModEntry.ShowMusicMenu();
-				return false;
+				if (wornHat.Name == "Headphones" || wornHat.Name == "Earbuds")
+                {
+					ModEntry.ShowMusicMenu();
+					return false;
+				}
+				if (wornHat.Name == "Studio Headphones")
+                {
+					ModEntry.ShowSoundMenu();
+					return false;
+				}
 			}
 
 			return true;
