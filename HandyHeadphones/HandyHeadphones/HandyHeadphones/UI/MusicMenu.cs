@@ -254,10 +254,16 @@ namespace HandyHeadphones.UI
 				{
 					base.exitThisMenu();
 
-					// Play song
-					this.chooseAction(this.pages[this.currentPage][i]);
+					string cueName = this.pages[this.currentPage][i];
+					if (cueName == "random")
+                    {
+						cueName = Utility.GetRandom<string>(songs.Where(s => s != "random" && s != "turn_off").ToList());
+					}
 
-					string songName = Utility.getSongTitleFromCueName(this.pages[this.currentPage][i]);
+					// Play song
+					this.chooseAction(cueName);
+
+					string songName = Utility.getSongTitleFromCueName(cueName);
 					if (songName == "Off")
 					{
 						Game1.addHUDMessage(new HUDMessage($"Shutting off headphones", 3));

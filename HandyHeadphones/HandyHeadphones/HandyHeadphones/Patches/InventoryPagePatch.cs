@@ -235,10 +235,7 @@ namespace HandyHeadphones.Patches
 				Game1.player.currentLocation.miniJukeboxTrack.Value = "";
 				return;
 			}
-			if (selection == "random")
-			{
-				Game1.player.currentLocation.SelectRandomMiniJukeboxTrack();
-			}
+
 			Game1.player.currentLocation.miniJukeboxTrack.Value = selection;
 		}
 
