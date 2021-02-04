@@ -16,137 +16,32 @@ namespace HandyHeadphones.Patches
 		private static IModHelper helper = ModEntry.modHelper;
 		private static ModConfig config = ModEntry.config;
 
-		public static readonly string[] allSongs =
-		{
-			"50s",
-			"AbigailFlute",
-			"AbigailFluteDuet",
-			"aerobics",
-			"breezy",
-			"bugLevelLoop",
-			"caldera",
-			"Cavern",
-			"christmasTheme",
-			"Cloth",
-			"CloudCountry",
-			"cowboy_boss",
-			"cowboy_outlawsong",
-			"Cowboy_OVERWORLD",
-			"Cowboy_singing",
-			"Cowboy_undead",
-			"crane_game",
-			"crane_game_fast",
-			"Crystal Bells",
-			"desolate",
-			"distantBanjo",
-			"echos",
-			"elliottPiano",
-			"EmilyDance",
-			"EmilyDream",
-			"EmilyTheme",
-			"end_credits",
-			"event1",
-			"event2",
-			"fall1",
-			"fall2",
-			"fall3",
-			"fallFest",
-			"fieldofficeTentMusic",
-			"FlowerDance",
-			"FrogCave",
-			"grandpas_theme",
-			"gusviolin",
-			"harveys_theme_jazz",
-			"heavy",
-			"honkytonky",
-			"Icicles",
-			"IslandMusic",
-			"jaunty",
-			"jojaOfficeSoundscape",
-			"junimoKart",
-			"junimoKart_ghostMusic",
-			"junimoKart_mushroomMusic",
-			"junimoKart_slimeMusic",
-			"junimoKart_whaleMusic",
-			"junimoStarSong",
-			"kindadumbautumn",
-			"libraryTheme",
-			"MainTheme",
-			"MarlonsTheme",
-			"marnieShop",
-			"mermaidSong",
-			"moonlightJellies",
-			"movie_classic",
-			"movie_nature",
-			"movie_wumbus",
-			"movieTheater",
-			"movieTheaterAfter",
-			"musicboxsong",
-			"Near The Planet Core",
-			"night_market",
-			"Of Dwarves",
-			"Overcast",
-			"PIRATE_THEME",
-			"PIRATE_THEME(muffled)",
-			"playful",
-			"poppy",
-			"ragtime",
-			"sad_kid",
-			"sadpiano",
-			"Saloon1",
-			"sam_acoustic1",
-			"sam_acoustic2",
-			"sampractice",
-			"Secret Gnomes",
-			"SettlingIn",
-			"shaneTheme",
-			"shimmeringbastion",
-			"spaceMusic",
-			"spirits_eve",
-			"spring1",
-			"spring2",
-			"spring3",
-			"springtown",
-			"starshoot",
-			"submarine_song",
-			"summer1",
-			"summer2",
-			"summer3",
-			"SunRoom",
-			"sweet",
-			"tickTock",
-			"tinymusicbox",
-			"title_night",
-			"tribal",
-			"VolcanoMines1",
-			"VolcanoMines2",
-			"wavy",
-			"wedding",
-			"winter1",
-			"winter2",
-			"winter3",
-			"WizardSong",
-			"woodsTheme",
-			"XOR"
-		};
-
         internal static MethodInfo TargetMethod()
         {
             return AccessTools.Method(typeof(StardewValley.Menus.InventoryPage), nameof(StardewValley.Menus.InventoryPage.receiveLeftClick));
         }
 
-        internal static bool Prefix(InventoryPage __instance, int x, int y, bool playSound = true)
+        internal static bool Prefix(InventoryPage __instance, out bool __state, int x, int y, bool playSound = true)
         {
+			__state = false;
+
 			ClickableComponent hatComponent = __instance.equipmentIcons.First(s => s.name == "Hat");
 			if (hatComponent.containsPoint(x, y))
 			{
-				if (IsHeadphoneHeld())
+				bool heldItemWasNull = Game1.player.CursorSlotItem is null;
+				if (!IsHeadphoneHeld())
 				{
+					if (IsWearingMusicPlayer())
+                    {
+						if (heldItemWasNull || Game1.player.CursorSlotItem is Hat)
+                        {
+							__state = true;
+						}
+					}
 					return true;
 				}
 
-				bool heldItemWasNull = Game1.player.CursorSlotItem is null;
-				if (Game1.player.CursorSlotItem.Name == "Headphones" || Game1.player.CursorSlotItem.Name == "Earbuds")
+				if (IsValidMusicPlayer(Game1.player.CursorSlotItem.Name))
 				{
 					Hat tmp = (Hat)helper.Reflection.GetMethod(__instance, "takeHeldItem").Invoke<Item>();
 					Item heldItem = Game1.player.hat;
@@ -167,7 +62,7 @@ namespace HandyHeadphones.Patches
 						helper.Reflection.GetMethod(__instance, "setHeldItem").Invoke(heldItem);
 					}
 
-					ModEntry.ShowMusicMenu();
+					ShowCorrectPrompt();
 				}
 
 				if (!heldItemWasNull || Game1.player.CursorSlotItem is null || !Game1.oldKBState.IsKeyDown(Keys.LeftShift))
@@ -202,7 +97,8 @@ namespace HandyHeadphones.Patches
 					if (Game1.player.hat.Value == null)
 					{
 						Game1.player.hat.Value = helper.Reflection.GetMethod(__instance, "takeHeldItem").Invoke<Item>() as Hat;
-						ModEntry.ShowMusicMenu();
+
+						ShowCorrectPrompt();
 						return false;
 					}
 				}
@@ -211,14 +107,70 @@ namespace HandyHeadphones.Patches
 			return true;
 		}
 
+		internal static void Postfix(InventoryPage __instance, bool __state, int x, int y, bool playSound = true)
+		{
+			ClickableComponent hatComponent = __instance.equipmentIcons.First(s => s.name == "Hat");
+			if (hatComponent.containsPoint(x, y))
+			{
+				if (__state)
+				{
+					Game1.changeMusicTrack("none");
+
+					if (!Game1.isStartingToGetDarkOut() && !Game1.isRaining)
+					{
+						Game1.playMorningSong();
+					}
+				}
+			}
+		}
+
+		private static void ShowCorrectPrompt()
+        {
+			Hat wornHat = Game1.player.hat;
+			if (wornHat is null)
+			{
+				return;
+			}
+
+			if (wornHat.Name == "Headphones" || wornHat.Name == "Earbuds")
+			{
+				ModEntry.ShowMusicMenu();
+				return;
+			}
+			if (wornHat.Name == "Studio Headphones")
+			{
+				ModEntry.ShowSoundMenu();
+				return;
+			}
+		}
+
+		private static bool IsWearingMusicPlayer()
+        {
+			if (Game1.player.hat != null)
+            {
+				Hat wornHat = Game1.player.hat;
+				if (wornHat != null && IsValidMusicPlayer(wornHat.Name))
+                {
+					return true;
+                }
+
+			}
+			return false;
+		}
+
+		private static bool IsValidMusicPlayer(string name)
+        {
+			return name == "Headphones" || name == "Earbuds" || name == "Studio Headphones";
+		}
+
 		private static bool IsHeadphoneHeld()
         {
-			return Game1.player.CursorSlotItem is null || (Game1.player.CursorSlotItem.Name != "Headphones" && Game1.player.CursorSlotItem.Name != "Earbuds");
+			return Game1.player.CursorSlotItem != null && IsValidMusicPlayer(Game1.player.CursorSlotItem.Name);
 		}
 
 		private static bool IsSelectingHeadPhonesInInventory(InventoryPage page, int x, int y)
         {
-			return page.inventory.getItemAt(x, y) != null && (page.inventory.getItemAt(x, y).Name == "Headphones" || page.inventory.getItemAt(x, y).Name == "Earbuds");
+			return page.inventory.getItemAt(x, y) != null && (page.inventory.getItemAt(x, y).Name == "Headphones" || page.inventory.getItemAt(x, y).Name == "Earbuds" || page.inventory.getItemAt(x, y).Name == "Studio Headphones");
         }
     }
 }
