@@ -11,26 +11,26 @@ using System.Collections.Generic;
 
 namespace HandyHeadphones.Patches
 {
-	[HarmonyPatch]
-	class GameChangeMusicTrackPatch
-	{
-		private static IMonitor monitor = ModEntry.monitor;
-		private static IModHelper helper = ModEntry.modHelper;
+    [HarmonyPatch]
+    class GameChangeMusicTrackPatch
+    {
+        private static IMonitor monitor = ModEntry.monitor;
+        private static IModHelper helper = ModEntry.modHelper;
 
-		internal static MethodInfo TargetMethod()
-		{
-			return AccessTools.Method(typeof(StardewValley.Game1), nameof(StardewValley.Game1.changeMusicTrack));
-		}
+        internal static MethodInfo TargetMethod()
+        {
+            return AccessTools.Method(typeof(StardewValley.Game1), nameof(StardewValley.Game1.changeMusicTrack));
+        }
 
-		internal static bool Prefix(string newTrackName, bool track_interruptable = false, StardewValley.Game1.MusicContext music_context = StardewValley.Game1.MusicContext.Default)
-		{
-			Hat playerHat = Game1.player.hat;
-			if (playerHat != null && (playerHat.Name == "Headphones" || playerHat.Name == "Earbuds" || playerHat.Name == "Studio Headphones") && Game1.CurrentEvent is null)
-			{
-				return false;
-			}
+        internal static bool Prefix(string newTrackName, bool track_interruptable = false, StardewValley.Game1.MusicContext music_context = StardewValley.Game1.MusicContext.Default)
+        {
+            Hat playerHat = Game1.player.hat;
+            if (playerHat != null && (playerHat.Name == "Headphones" || playerHat.Name == "Earbuds" || playerHat.Name == "Studio Headphones") && Game1.CurrentEvent is null)
+            {
+                return false;
+            }
 
-			return true;
-		}
-	}
+            return true;
+        }
+    }
 }

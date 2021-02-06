@@ -11,27 +11,27 @@ using System.Collections.Generic;
 
 namespace HandyHeadphones.Patches
 {
-	[HarmonyPatch]
-	class GameLocationPatch
-	{
-		private static IMonitor monitor = ModEntry.monitor;
-		private static IModHelper helper = ModEntry.modHelper;
+    [HarmonyPatch]
+    class GameLocationPatch
+    {
+        private static IMonitor monitor = ModEntry.monitor;
+        private static IModHelper helper = ModEntry.modHelper;
 
-		internal static MethodInfo TargetMethod()
-		{
-			return AccessTools.Method(typeof(StardewValley.GameLocation), nameof(StardewValley.GameLocation.IsMiniJukeboxPlaying));
-		}
+        internal static MethodInfo TargetMethod()
+        {
+            return AccessTools.Method(typeof(StardewValley.GameLocation), nameof(StardewValley.GameLocation.IsMiniJukeboxPlaying));
+        }
 
-		internal static bool Prefix(GameLocation __instance, ref bool __result)
-		{
-			Hat playerHat = Game1.player.hat;
-			if (playerHat != null && (playerHat.Name == "Headphones" || playerHat.Name == "Earbuds" || playerHat.Name == "Studio Headphones"))
+        internal static bool Prefix(GameLocation __instance, ref bool __result)
+        {
+            Hat playerHat = Game1.player.hat;
+            if (playerHat != null && (playerHat.Name == "Headphones" || playerHat.Name == "Earbuds" || playerHat.Name == "Studio Headphones"))
             {
-				__result = true;
-				return false;
+                __result = true;
+                return false;
             }
 
-			return true;
-		}
-	}
+            return true;
+        }
+    }
 }
